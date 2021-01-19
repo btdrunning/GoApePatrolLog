@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:padding="30dp">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnExit"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Exit" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnSkip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Skip" />
+
+    <ImageView
+        android:layout_width="125dp"
+        android:layout_height="75dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:src="@mipmap/go_ape_logo"
+        android:id="@+id/goApeLogo"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Instructor: "
+        android:id="@+id/instructorName"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/btnExit"
+        android:layout_marginTop="50dp"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/instructorName"
+        android:layout_centerHorizontal="true"
+        android:hint="Name"
+        android:id="@+id/inputName"
+        android:maxLines="1"
+        android:inputType="text"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Update Name"
+        android:layout_below="@+id/inputName"
+        android:layout_marginTop="10dp"
+        android:id="@+id/btnUpdateName"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Landing Site 2 "
+        android:id="@+id/siteName"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/btnUpdateName"
+        android:layout_marginTop="50dp"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/siteCondition"
+        android:layout_below="@+id/siteName"
+        android:layout_centerHorizontal="true">
+
+            <RadioButton
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Okay"
+                android:id="@+id/okayOrClear"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Raked"
+                android:id="@+id/rakedOrGood" />
+
+    </RadioGroup>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/siteCondition"
+        android:hint="Queue"
+        android:id="@+id/inputQueue"
+        android:maxLines="1"
+        android:inputType="text"
+        android:visibility="gone"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:text="Submit"
+        android:id="@+id/btnSubmit"/>
+
+
+</RelativeLayout>
