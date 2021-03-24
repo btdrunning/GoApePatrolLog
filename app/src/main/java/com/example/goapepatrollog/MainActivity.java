@@ -14,10 +14,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,9 +32,10 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
+    private RelativeLayout mainMenu, startUpMenu, accidentMenu,settingsMenu;
     private RadioGroup siteCondition;
     private RadioButton okayOrClear, rakedOrGood;
-    private Button btnSubmit, btnExit, btnSkip, btnUpdateName;
+    private Button btnSubmit, btnExit, btnSkip, btnUpdateName,settingsButton, settingsBack, createLog;
     private TextView instructorName, siteName;
     private EditText inputQueue, inputName;
     private String currentInstructorName, condition, queue, currentSiteName;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
-            case R.id.okayOrClear:
+            case R.id.okayOrClear: //For the Condition buttons, checks if button 1 or button 0 are checked. Depending on if it is a Landing Site or just a Site, the string to be input will be determined elsewhere
                 conditionStatus = 1;
                 break;
             case R.id.rakedOrGood:
@@ -60,60 +61,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v) { // Override for ALL button onClick readers
         switch (v.getId()) {
-            case R.id.btnSubmit:
+            case R.id.btnSubmit: // Logic to gather necessary info and save on submit button click
                 Toast.makeText(this, "Submitted", Toast.LENGTH_SHORT).show();
                 if (inputQueue.getText().toString().trim().length() == 0) {
-                    queue = "-";
+                    queue = "-"; //No queue is entered (due to not being allowed or by choice)
                 } else {
-                    queue = inputQueue.getText().toString().trim();
+                    queue = inputQueue.getText().toString().trim(); //Whatever is entered into Queue will be entered
                 }
-                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss"); //Might have to change to lower API level needed, there are other ways to get timestamp
                 String now = LocalTime.now().format(timeFormat);
-                if (conditionStatus == 1)
+                if (conditionStatus == 1) //Uses logic from above along with the current site/landing site to determine string to be saved
                 {
-                    condition = okayOrClear.getText().toString();
+                    condition = okayOrClear.getText().toString(); //Okay on Landing Site and Clear on Site
                 }
                 else
                 {
-                    condition = rakedOrGood.getText().toString();
+                    condition = rakedOrGood.getText().toString(); //Raked on Landing Site and Good on Site
                 }
 
-                System.out.println(now);
+                System.out.println(now); //USED FOR TESTING, TO BE REMOVED
                 System.out.println(queue);
                 System.out.println(condition);
                 System.out.println(currentInstructorName);
                 System.out.println(currentSiteName);
-//
-                fileContent = currentSiteName + "\t| " + queue + "\t| " + condition + "\t| " + now + "\t| " + currentInstructorName + "\n";
-                writeToTxt();
 
+                fileContent = currentSiteName + "\t| " + queue + "\t| " + condition + "\t| " + now + "\t| " + currentInstructorName + "\n"; //Determines string to be written based off of given info
+                writeToTxt(); //Goes to write function which will open text editor, save to the txt file and close the text editor
+
+                if (currentStationNumber == 6) { //Determines what the next Site/Landing Site will be in the loop (Currently hard-coded for Lums Pond Site, might broaden)
+                    currentStationNumber = 0;
+                } else {
+                    currentStationNumber++;
+                }
+                nextStation(); //Does logic to determine the text to be shown to the user based on the new currentStationNumber value
+                clearEditTexts(); //Clears on text input blocks as to not allow accidental repeat entries for future submits
+                break;
+            case R.id.btnSkip: //Just moves to the next Site/Landing Site without saving the value (Logic could be potentially be put into own function)
                 if (currentStationNumber == 6) {
                     currentStationNumber = 0;
                 } else {
                     currentStationNumber++;
                 }
-                nextStation();
-                clearEditTexts();
+                nextStation(); //Changes Visible Text
+                clearEditTexts(); //Clears text blocks
                 break;
-            case R.id.btnSkip:
-                if (currentStationNumber == 6) {
-                    currentStationNumber = 0;
-                } else {
-                    currentStationNumber++;
-                }
-                nextStation();
-                clearEditTexts();
-                break;
-            case R.id.btnExit:
-
-            case R.id.btnUpdateName:
+            case R.id.btnExit: //NO USE CURRENTLY
+                //May change to MENU button, will see (debating about allowing the user to go back to menu during patrol (to add instructor name and other settings changes) Debating about not allowing but I DONT KNOW if it is needed or will work
+                mainMenu.setVisibility(View.GONE);
+                startUpMenu.setVisibility(View.VISIBLE);
+            case R.id.btnUpdateName: //Takes Instructor Name from Text box and saves
                 currentInstructorName = inputName.getText().toString().trim();
                 instructorName.setText("Instructor: " + currentInstructorName);
                 inputName.setText("");
                 break;
-            default:
+            case R.id.createLog: //Goes from Menu screen to Main Patrol Log
+                startUpMenu.setVisibility(View.GONE);
+                mainMenu.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.settingsButton:
+                startUpMenu.setVisibility(View.GONE);
+                settingsMenu.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.settingsBack:
+                settingsMenu.setVisibility(View.GONE);
+                startUpMenu.setVisibility(View.VISIBLE);
+                break;
+            default: //Any other buttons currently
                 break;
 
         }
@@ -121,42 +138,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.activity_main);
+        
+                btnSubmit = findViewById(R.id.btnSubmit);
+                btnSkip = findViewById(R.id.btnSkip);
+                btnExit = findViewById(R.id.btnExit);
+                btnUpdateName = findViewById(R.id.btnUpdateName);
+                instructorName = findViewById(R.id.instructorName);
+                siteName = findViewById(R.id.siteName);
+                inputQueue = findViewById(R.id.inputQueue);
+                inputName = findViewById(R.id.inputName);
+                okayOrClear = findViewById(R.id.okayOrClear);
+                rakedOrGood = findViewById(R.id.rakedOrGood);
+                siteCondition = findViewById(R.id.siteCondition);
+                mainMenu = findViewById(R.id.mainMenu);
+                startUpMenu = findViewById(R.id.startUpMenu);
+                settingsButton = findViewById(R.id.settingsButton);
+                settingsMenu = findViewById(R.id.settingsMenu);
+                settingsBack = findViewById(R.id.settingsBack);
+                createLog = findViewById(R.id.createLog);
 
-        btnSubmit = findViewById(R.id.btnSubmit);
-        btnSkip = findViewById(R.id.btnSkip);
-        btnExit = findViewById(R.id.btnExit);
-        btnUpdateName = findViewById(R.id.btnUpdateName);
-        instructorName = findViewById(R.id.instructorName);
-        siteName = findViewById(R.id.siteName);
-        inputQueue = findViewById(R.id.inputQueue);
-        inputName = findViewById(R.id.inputName);
-        okayOrClear = findViewById(R.id.okayOrClear);
-        rakedOrGood = findViewById(R.id.rakedOrGood);
-        siteCondition = findViewById(R.id.siteCondition);
+                btnExit.setOnClickListener(this);
+                btnSkip.setOnClickListener(this);
+                btnSubmit.setOnClickListener(this);
+                btnUpdateName.setOnClickListener(this);
+                settingsButton.setOnClickListener(this);
+                settingsBack.setOnClickListener(this);
+                createLog.setOnClickListener(this);
 
-        btnExit.setOnClickListener(this);
-        btnSkip.setOnClickListener(this);
-        btnSubmit.setOnClickListener(this);
-        btnUpdateName.setOnClickListener(this);
-
-        siteCondition.setOnCheckedChangeListener(this);
-
-        currentSiteName = "LS 2";
-
-        SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_yyyy");
-        Date today = new Date();
-        filename = "LumsPond" + formatter.format(today) + ".txt";
-        filepath = "MyFileDir";
-
-        if(!isExternalStorageAvailableForRW()){
-            btnSubmit.setEnabled(false);
-        }
+                siteCondition.setOnCheckedChangeListener(this);
+        
+                currentSiteName = "LS 2";
+        
+                SimpleDateFormat formatter = new SimpleDateFormat("MM_dd_yyyy");
+                Date today = new Date();
+                filename = "LumsPond" + formatter.format(today) + ".txt";
+                filepath = "MyFileDir";
+        
+                if(!isExternalStorageAvailableForRW()){ //If for some reason the device will not allow Read/Write to external/internal storage, the submit button won't be available. Don't know if it actually does anything right now
+                    btnSubmit.setEnabled(false);
+                }
 
     }
 
-    public void nextStation() {
+    public void nextStation() { //Lums Pond rotation logic
         if (currentStationNumber == 1 || currentStationNumber == 2 || currentStationNumber == 6) {
             okayOrClear.setText("Clear");
             rakedOrGood.setText("Good");
@@ -196,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         inputQueue.setText("");
     }
 
-    private boolean isExternalStorageAvailableForRW(){
+    private boolean isExternalStorageAvailableForRW(){ //CHECK IF ACTUALLY WORKS/DOES ANYTHING
         String extStorageState = Environment.getExternalStorageState();
         if(extStorageState.equals(Environment.MEDIA_MOUNTED)){
             return true;
@@ -204,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    public void writeToTxt() {
+    public void writeToTxt() { //Writes given text to file to be saved
         File myExternalFile = new File(getExternalFilesDir(filepath), filename);
         FileOutputStream fos = null;
         try {
